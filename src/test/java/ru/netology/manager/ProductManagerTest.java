@@ -1,93 +1,57 @@
 package ru.netology.manager;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.netology.domain.Book;
-import ru.netology.domain.Product;
-import ru.netology.domain.Smartphone;
+import ru.netology.domain.*;
 import ru.netology.repository.ProductRepository;
 
 public class ProductManagerTest {
-    @Test
-    public void addProd() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 83_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-        manager.add(smartphone1);
-
-        Product[] expected = {book1, smartphone1};
-        Product[] actual = repo.getAll();
-        Assertions.assertArrayEquals(expected, actual);
+    ProductRepository repository = new ProductRepository();
+    ProductManager manager = new ProductManager(repository);
+    Product product1  = new Product(1, "Как закалялась сталь", 200);
+    Product product2 = new Product(2, "Айвенго", 300);
+    Product product3 = new Product(3, "Xiaomi", 6000);
+    Product product4  = new Book(1, "Как закалялась сталь", 200,"Островский");
+    Product product5  = new Smartphone(5, "Xiaomi", 2000,"China");
+    @BeforeEach
+    public void setup() {
+        manager.save(product1);
+        manager.save(product2);
+        manager.save(product3);
+        manager.save(product4);
+        manager.save(product5);
     }
 
     @Test
-    public void findName() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 83_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-        manager.add(smartphone1);
-
-        Product[] expected = {smartphone1};
-        Product[] actual = manager.searchBy("Смартфон");
+    public void shouldFindByName() {
+        String name = "Айвенго";
+        Product[] expected = new Product[]{product2};
+        Product[] actual = manager.searchBy(name);
         Assertions.assertArrayEquals(expected, actual);
+
     }
-
     @Test
-    public void notFindName() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 83_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-        manager.add(smartphone1);
-
+    public void shouldProductDoesNotExit() {//Найти несуществующий продукт
+        String nameToSearch = "ГОД";
         Product[] expected = {};
-        Product[] actual = manager.searchBy("Гражданская война");
+        Product[] actual = manager.searchBy( nameToSearch );
+        Assertions.assertArrayEquals( expected, actual );
+    }
+    @Test
+    public void shouldFindByAuthor() {
+        String author = "Островский";
+        Product[] expected = new Book[]{};
+        Product[] actual = manager.searchBy(author);
         Assertions.assertArrayEquals(expected, actual);
+
     }
-
     @Test
-    public void findProd() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 83_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-        manager.add(smartphone1);
-
-        Boolean expected = true;
-        Boolean actual = manager.matches(book1, "Книга");
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void findTwoProd() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 83_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        Book book2 = new Book(3, "Книга", 1000, "Как закалялась сталь", "Николай Островский");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-        manager.add(smartphone1);
-        manager.add(book2);
-
-        Product[] expected = {book1, book2};
-        Product[] actual = manager.searchBy("Книга");
+    public void shouldFindByManufacturer() {
+        String manufacturer = "China";
+        Product[] expected = new Smartphone[]{};
+        Product[] actual = manager.searchBy(manufacturer);
         Assertions.assertArrayEquals(expected, actual);
-    }
 
-    @Test
-    public void notFindProd() {
-        Book book1 = new Book(1, "Книга", 700, "Как закалялась сталь", "Николай Островский");
-        ProductRepository repo = new ProductRepository();
-        ProductManager manager = new ProductManager(repo);
-        manager.add(book1);
-
-        Boolean expected = false;
-        Boolean actual = manager.matches(book1, "Роман");
-        Assertions.assertEquals(expected, actual);
     }
 }

@@ -2,35 +2,38 @@ package ru.netology.repository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.netology.domain.Book;
+
 import ru.netology.domain.Product;
-import ru.netology.domain.Smartphone;
+import ru.netology.manager.ProductManager;
+
 
 public class ProductRepositoryTest {
-    @Test
-    public void addFile() {
-        Book book1 = new Book(1, "Книга", 500, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 40_400, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        repo.addProduct(book1);
-        repo.addProduct(smartphone1);
+    ProductRepository repository = new ProductRepository();
+    //  ProductManager manager = new ProductManager(repository);
+    Product product1 = new Product(1, "Как закалялась сталь", 200);
+    Product product2 = new Product(2, "Айвенго", 300);
+    Product product3 = new Product(3, "Xiaomi", 6000);
 
-        Product[] expected = {book1, smartphone1};
-        Product[] actual = repo.getAll();
+    @Test
+    public void shouldSaveOneProduct() {
+        repository.save(product1);
+        repository.save(product2);
+
+        Product[] expected = new Product[]{product1, product2};
+        Product[] actual = repository.findAll();
         Assertions.assertArrayEquals(expected, actual);
     }
 
     @Test
-    public void deleteId() {
-        Book book1 = new Book(1, "Книга", 500, "Как закалялась сталь", "Николай Островский");
-        Smartphone smartphone1 = new Smartphone(2, "Смартфон", 40_000, "Xiaomi 13 12/256 GB", "Xiaomi");
-        ProductRepository repo = new ProductRepository();
-        repo.addProduct(book1);
-        repo.addProduct(smartphone1);
-        repo.deleteID(1);
-
-        Product[] expected = {smartphone1};
-        Product[] actual = repo.getAll();
+    public void shouldRemoveId() {
+        repository.save(product1);
+        repository.save(product2);
+        repository.save(product3);
+        repository.removeById(product2.getId());
+        Product[] expected = {product1, product3};
+        Product[] actual = repository.getProducts();
         Assertions.assertArrayEquals(expected, actual);
     }
+
+
 }

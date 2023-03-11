@@ -1,30 +1,31 @@
 package ru.netology.manager;
 
-import ru.netology.domain.Product;
+import ru.netology.domain.*;
 import ru.netology.repository.ProductRepository;
 
 public class ProductManager {
-    public ProductRepository repo;
+    ProductRepository repository;
 
-    public ProductManager(ProductRepository repo) {
-        this.repo = repo;
+
+    public ProductManager(ProductRepository repository) {
+        this.repository = repository;
     }
 
-    public void add(Product product) {
-        repo.addProduct(product);
+    public void save(Product product) {
+        repository.save(product);
     }
 
     public Product[] searchBy(String text) {
         Product[] result = new Product[0]; // тут будем хранить подошедшие запросу продукты
-        for (Product product : repo.getAll()) {
+        for (Product product : repository.findAll()) {
             if (matches(product, text)) {
                 Product[] tmp = new Product[result.length + 1];
-                for (int i = 0; i < result.length; i++) {
-                    tmp[i] = result[i];
-                }
-                tmp[result.length] = product;
+
+                System.arraycopy(result, 0, tmp, 0, result.length);
+                tmp[tmp.length - 1] = product;
                 result = tmp;
             }
+
         }
         return result;
     }
@@ -36,5 +37,8 @@ public class ProductManager {
         } else {
             return false;
         }
+        // или в одну строку:
+        // return product.getName().contains(search);
     }
+
 }
